@@ -184,7 +184,7 @@ All tools talk to the same control-plane API over the MCP URL.
   page (status-aware) — not an error, and not broken DNS.
 - `list_projects` / `get_project` — list or fetch a project by id or slug.
 - `delete_project` — stop and delete a project (frees the slug after quarantine).
-- `set_env` / `list_env` — set env (needs restart) or list keys with masked values.
+- `set_env` / `list_env` — set env (applies on the next deploy; a restart does not re-apply env) or list keys with masked values.
 - `deploy_project` — pull an image by digest and run one container.
 - `start_project` / `stop_project` / `restart_project` — control the container.
 - `get_status` / `get_logs` — status/url/last error and recent log lines (`tail` lines or a `since` seconds window; logs are live pod streams, not stored history).
@@ -242,9 +242,12 @@ the active plan and its limits.
   hard quota; a project that grows far past it may be paused.
 - **Deploys are rate-limited to 1 per 5 minutes per account.** A rejected
   `deploy_project` reply says when to retry (`retry in ~Ns`). While you wait,
-  `restart_project` is free and unthrottled: it recovers a transient crash
-  without a new digest (on production it re-runs the *current* digest, so use
-  it for crashes — not for picking up a new image).
+  `restart_project` is free and unthrottled: on production it recreates the
+  pod from the stored workload (re-running the injected-DB resolver gate and
+  the app's storage probes) and waits for readiness — a failed start returns a
+  named error, and a plain retry usually clears a transient DNS drop. It
+  re-runs the *current* digest, so use it for crashes — not for picking up a
+  new image or for `set_env` changes (those need a redeploy).
 - One slug = one container. No replicas, no private networking between apps.
 - linux/amd64 only, HTTP only. **The app filesystem is read-only** — writing
   anywhere except `/tmp` fails with `EROFS`; `/tmp` is a 64 Mi RAM scratch disk

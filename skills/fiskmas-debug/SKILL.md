@@ -22,9 +22,9 @@ The proxy reached the host but the app was not serving.
 - `get_logs` → look for the fatal line (missing env, bad port, OOM).
 - OOM? The app exceeded the memory cap (256 MB Free / 512 MB Plus). Reduce usage or fix
   the leak.
-- Missing env? `set_env` the required vars, then `deploy_project` on
-  production (a restart is only a scale-up on the k8s backend and does not
-  re-apply env; in local dev a restart does).
+- Missing env? `set_env` the required vars, then `deploy_project`: a restart
+  reuses the stored workload and does not re-apply env (on k8s it is a
+  scale-up; in local dev it reuses the same container).
 
 ## Health check fails
 
@@ -45,11 +45,16 @@ and deploy history. Pass a `project` for a single project's view.
 
 ## restart vs redeploy
 
-- **restart** — cheap; restarts the same image. Use for transient crashes. On
-  the production (k8s) backend a restart is only a scale-up and does NOT
-  re-apply env — after any `set_env`, redeploy instead. `restart_project` is
-  NOT rate-limited (deploys are: 1 per 5 minutes per account), so when a
-  deploy fails with a `deploy rate limit` error, prefer it while you wait.
+- **restart** — cheap; recreates the pod from the stored workload with the
+  same image and env. Use for transient crashes and for a transient DB-DNS
+  drop: on production the new pod re-runs the `dns-db-gate` resolver probe
+  and the app's storage probes, and `restart_project` now waits for the pod
+  to become ready — a failed start returns a named error (e.g. "injected
+  database host … is not resolvable"), so a second `restart_project` is the
+  cheap retry. It does NOT re-apply env — after any `set_env`, redeploy
+  instead. `restart_project` is NOT rate-limited (deploys are: 1 per 5
+  minutes per account), so when a deploy fails with a `deploy rate limit`
+  error, prefer it while you wait.
 - **redeploy** — pulls the new digest (or re-applies the current one) and runs
   the workload with the stored env, health-gated. Use after pushing a new image
   AND after `set_env` on production.
@@ -62,7 +67,7 @@ platform's current DB hostname: the app's readiness probe is its own `/health`
 and does not check the DB. The stored env now carries the correct
 hostname (the platform migrates it on boot), so `deploy_project` to re-create
 the workload with the current env. Do not use `restart_project` for this on
-production — it keeps the old container env. Never `set_env` a custom
+production — it reuses the stored workload's old env. Never `set_env` a custom
 `DATABASE_URL`/`MYSQL_*` over the injected ones; that replaces the whole env
 map and drops the provisioned credentials.
 
