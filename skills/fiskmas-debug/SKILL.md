@@ -23,8 +23,8 @@ The proxy reached the host but the app was not serving.
 - OOM? The app exceeded the memory cap (256 MB Free / 512 MB Plus). Reduce usage or fix
   the leak.
 - Missing env? `set_env` the required vars, then `deploy_project`: a restart
-  reuses the stored workload and does not re-apply env (on k8s it is a
-  scale-up; in local dev it reuses the same container).
+  recreates the pod from the stored workload (local dev reuses the same
+  container) and does not re-apply env.
 
 ## Health check fails
 
