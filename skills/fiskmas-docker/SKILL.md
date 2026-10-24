@@ -18,8 +18,8 @@ and push to the registry; Fiskmås does not remote-build from git in v1.
 - **Ephemeral filesystem.** No persistent volumes on the app container. Use the
   shared MariaDB: `DATABASE_URL` (and `MYSQL_*`) are injected on `create_project`.
   The DB host is injected for you (a cluster-FQDN on production) — do not
-  hardcode it, and do not override it via `set_env` (that replaces the whole
-  env and drops the credentials).
+  hardcode it. `set_env` merges into the stored env and rejects overriding
+  the injected `DATABASE_URL`/`MYSQL_*`.
 - **Non-root if possible.** Run as an unprivileged user (`USER`).
 - **No secrets baked in.** Pass secrets via env (`set_env`), never `ARG`/`ENV`
   in the image. Env is encrypted at rest on the server.

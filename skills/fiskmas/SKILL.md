@@ -261,7 +261,8 @@ the active plan and its limits.
   `docs/network-policy.md` — plus a dedicated Docker network in local dev).
   The injected DB hostname is the right one for the app's network — on
   production it is the cluster-FQDN `shared-mariadb.platform.svc.cluster.local`;
-  never hardcode a host or `set_env` over the injected `DATABASE_URL`/`MYSQL_*`.
+  never hardcode a host; `set_env` merges into the stored env and rejects
+  overriding the injected `DATABASE_URL`/`MYSQL_*`.
 
 ## Plans and billing
 
