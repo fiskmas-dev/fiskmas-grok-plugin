@@ -67,9 +67,10 @@ platform's current DB hostname: the app's readiness probe is its own `/health`
 and does not check the DB. The stored env now carries the correct
 hostname (the platform migrates it on boot), so `deploy_project` to re-create
 the workload with the current env. Do not use `restart_project` for this on
-production — it reuses the stored workload's old env. Never `set_env` a custom
-`DATABASE_URL`/`MYSQL_*` over the injected ones; that replaces the whole env
-map and drops the provisioned credentials.
+production — it reuses the stored workload's old env. `set_env` merges into
+the stored env and rejects attempts to override the injected
+`DATABASE_URL`/`MYSQL_*`; `deploy_project` re-injects them if they ever go
+missing.
 
 ## URL shows a Fiskmås placeholder page
 
