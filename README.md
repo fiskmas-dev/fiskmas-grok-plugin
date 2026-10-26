@@ -58,15 +58,15 @@ Get one for free at https://fiskmas.dev (no card required — 1 running project 
 
 ## Repository policy
 
-**Never commit real tokens, keys, or credentials to this repo** — it is public and pinned
-by SHA from the xAI plugin marketplace. The only secret this plugin uses is the `FISKMAS_TOKEN`
-environment variable at runtime. If a token is ever accidentally committed, rotate it at
-https://fiskmas.dev and force-push; the marketplace will pick up the new SHA on its next
-daily bump.
+**Never commit real tokens, keys, or credentials to this repo** — it is public, and once the
+xAI plugin marketplace lists it, this repo is pinned by SHA there. The only secret this plugin
+uses is the `FISKMAS_TOKEN` environment variable at runtime. If a token is ever accidentally
+committed, rotate it at https://fiskmas.dev and force-push; once listed, the marketplace will
+pick up the new SHA on its next daily bump.
 
 The skills in `skills/` are copies of the skill source in the Fiskmås platform repo; they
-are re-synced whenever the platform's MCP surface changes (same day, via the marketplace's
-SHA-bump flow).
+are re-synced whenever the platform's MCP surface changes (same day; once listed, via the
+marketplace's SHA-bump flow).
 
 ## License
 
