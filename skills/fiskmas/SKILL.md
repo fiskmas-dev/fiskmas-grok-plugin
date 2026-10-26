@@ -30,7 +30,7 @@ Grok — two surfaces:
 
 - **Grok Build (CLI):** install the `fiskmas` plugin from the xAI plugin
   marketplace (`grok plugin install fiskmas --trust`; source:
-  https://github.com/fiskmas-dev/fiskmas-grok-plugin). The plugin ships this skill
+  https://github.com/pefman/fiskmas-grok-plugin). The plugin ships this skill
   plus the MCP pointer — the human side only needs `FISKMAS_TOKEN` in the
   environment.
 - **Grok (web/app):** add a custom MCP connector pointing at the URL above.
@@ -189,6 +189,8 @@ All tools talk to the same control-plane API over the MCP URL.
 - `start_project` / `stop_project` / `restart_project` — control the container.
 - `get_status` / `get_logs` — status/url/last error and recent log lines (`tail` lines or a `since` seconds window; logs are live pod streams, not stored history).
 - `get_stats` — account-wide or per-project stats: live CPU/mem vs the plan caps and deploy history; the account rollup reports the plan. With `project` + `since` (seconds, plan-capped) it also returns `resources.history` — the project's CPU/mem time series over that window (sampled every ~30 s on the k3s platform; the field is simply absent where there is no metrics history).
+- `database_dump` — export the project's platform-provisioned database: a cluster-side dump Job (MariaDB `--single-transaction`, zstd-compressed) writes a compressed artifact to your tenant's artifact store. Small dumps finish inline and return metadata + a presigned download URL (~24 h lifetime; the artifact itself is purged after 7 days). Large dumps return a `dump_id` with `status=running` — poll `dump_status`. The dump bytes never pass through the tool response; hand the URL to the human to download. Rate limit: 2 per hour per account.
+- `dump_status` — poll one dump: `pending|running|done|failed`; when done, size/compression + the presigned URL (null once expired — start a new dump); when failed, the error reason.
 - `send_feedback` — report a problem (it broke, you got stuck, or the instructions were unclear) so the platform can be fixed; do not send praise.
 - `list_skills` / `get_skill` — return the platform skill bytes.
 
@@ -240,6 +242,7 @@ the active plan and its limits.
   wins). Logs of a currently-asleep project are unavailable until it wakes.
 - **Project databases are fair-use**: the size above is a guide, not an
   hard quota; a project that grows far past it may be paused.
+- **Export your database**: `database_dump` produces a compressed dump of the project's injected MariaDB (the same credentials the app uses; the export runs cluster-side in your own tenant namespace). Give the human the presigned URL — it expires in ~24 h and the artifact is purged after 7 days. The platform does not back up tenant databases automatically; the dump is the export path.
 - **Deploys are rate-limited to 1 per 5 minutes per account.** A rejected
   `deploy_project` reply says when to retry (`retry in ~Ns`). While you wait,
   `restart_project` is free and unthrottled: on production it recreates the
