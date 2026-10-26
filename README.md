@@ -36,6 +36,16 @@ grok plugin install ./fiskmas-grok-plugin
 Claude Code reads the same files (root `.mcp.json` + `.claude-plugin/plugin.json` +
 `skills/`), so the plugin also works there.
 
+Gemini CLI installs this repo as an extension (manifest: `gemini-extension.json`):
+
+```bash
+gemini extensions install https://github.com/fiskmas-dev/fiskmas-grok-plugin
+```
+
+Any other MCP client (Cursor, Windsurf, generic Streamable-HTTP) can follow the
+copy-paste connect steps in [`llms-install.md`](llms-install.md). `glama.json`
+is the directory metadata for the Glama MCP directory.
+
 ## One token, three surfaces
 
 Everything uses a single Fiskmås API token:
