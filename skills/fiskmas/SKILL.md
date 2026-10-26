@@ -272,16 +272,24 @@ the active plan and its limits.
   anytime → the account returns to Free (projects that exceed the Free
   limits are hibernated/stopped; nothing is deleted).
 - **Purchasing is a human step.** Upgrading runs through Stripe Checkout:
-  the human opens the upgrade button on the plans section of
-  `https://fiskmas.dev` (or the `upgrade_url` `whoami` reports), enters
-  their Fiskmås API token, pays on Stripe's hosted page. The platform's
-  billing webhook flips the account to Plus automatically after payment —
-  the agent never initiates or sees payment; `whoami`/`get_stats` simply
-  start reporting `plus`.
+  the human opens the plans section (`#pricing`) of `https://fiskmas.dev`
+  (the `upgrade_url` `whoami` reports), the **Upgrade to Plus** button there
+  prompts for their Fiskmås API token, `POST /api/billing/checkout` mints a
+  Stripe-hosted Checkout page for the pinned Plus price, and they pay on
+  Stripe. The platform's billing webhook flips the account to Plus
+  automatically after payment — the agent never initiates or sees payment;
+  `whoami`/`get_stats` simply start reporting `plus`. Stripe returns to
+  `https://fiskmas.dev/?checkout=success` (paid) or `?checkout=cancelled`
+  (abandoned; the account keeps its current plan) — the landing page just
+  reports the outcome.
 - If a tool is rejected because of a plan limit (quota, cap, log window),
   relay the error text to the human: it names the plan, the limit, the
   price and the upgrade page. Do not retry the same call; the limit will
   not change itself.
+- **Owner/admin accounts** (e.g. `info@peterfrank.se`) may be set to Plus
+  manually, without a Stripe subscription. If `whoami` reports `plus` with no
+  billing row, that is intentional — do not tell that account to "fix"
+  checkout.
 
 ## Docker contract (see fiskmas-docker)
 
