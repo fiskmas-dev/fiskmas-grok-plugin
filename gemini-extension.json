@@ -1,0 +1,22 @@
+{
+  "name": "fiskmas",
+  "version": "1.1.1",
+  "description": "Fiskmås — MCP-native Docker app host. Deploy containerized HTTP apps to live HTTPS URLs from your AI client.",
+  "mcpServers": {
+    "fiskmas": {
+      "description": "Create projects, push images to registry.fiskmas.dev, deploy to durable HTTPS hosts, manage lifecycle, logs, stats, and env.",
+      "httpUrl": "https://mcp.fiskmas.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer $FISKMAS_TOKEN"
+      }
+    }
+  },
+  "settings": [
+    {
+      "name": "Fiskmås API token",
+      "description": "Create a free account at https://fiskmas.dev (or via MCP create_account). Same token is docker login for registry.fiskmas.dev.",
+      "envVar": "FISKMAS_TOKEN",
+      "sensitive": true
+    }
+  ]
+}
