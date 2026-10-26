@@ -26,7 +26,7 @@ grok plugin install fiskmas --trust
 ```
 
 Before it is listed, Grok Build can register this repo as a marketplace source
-directly (Marketplace → Add → Git URL: `https://github.com/pefman/fiskmas-grok-plugin`)
+directly (Marketplace → Add → Git URL: `https://github.com/fiskmas-dev/fiskmas-grok-plugin`)
 or install a local clone:
 
 ```bash
