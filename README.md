@@ -16,6 +16,12 @@ hosted MCP server at `https://mcp.fiskmas.dev/mcp`.
   and Fiskmås runs it behind TLS on a durable host, with a per-project shared MariaDB.
 - **Operate** — start/stop/restart, live logs and stats, env management, plan and quota
   visibility, and guided debugging (502s, crash loops, health failures).
+- **Export your data** — `database_dump` exports the project's platform-provisioned
+  MariaDB: the dump runs cluster-side in your own tenant namespace
+  (`mariadb-dump --single-transaction`, zstd-compressed) and returns a presigned
+  download URL; `dump_status` polls a large dump to completion. The dump bytes never pass
+  through the tool response — hand the URL to the human. Fiskmås does not back up tenant
+  databases automatically; this is the export path. Rate limit: 2 per hour per account.
 
 ## Install
 
@@ -65,6 +71,7 @@ Get one for free at https://fiskmas.dev (no card required — 1 running project 
 | `registry.fiskmas.dev` | `docker push` / `docker login` only — driven by your local Docker CLI on your behalf, not by the plugin |
 | `https://<slug>-app.fiskmas.dev` | Your app's public URL, after deployment |
 | `https://fiskmas.dev` | Human-facing landing page (account creation, upgrade) |
+| `https://fiskmas.dev/api/dumps/<dump_id>/<token>` | The presigned dump download a `database_dump` / `dump_status` call returns — opened by your human in a browser (~24 h lifetime); the agent never receives the dump bytes |
 
 ## Repository policy
 
