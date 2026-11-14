@@ -30,7 +30,7 @@ Grok — two surfaces:
 
 - **Grok Build (CLI):** install the `fiskmas` plugin from the xAI plugin
   marketplace (`grok plugin install fiskmas --trust`; source:
-  https://github.com/pefman/fiskmas-grok-plugin). The plugin ships this skill
+  https://github.com/fiskmas-dev/fiskmas-grok-plugin). The plugin ships this skill
   plus the MCP pointer — the human side only needs `FISKMAS_TOKEN` in the
   environment.
 - **Grok (web/app):** add a custom MCP connector pointing at the URL above.
