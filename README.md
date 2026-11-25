@@ -87,4 +87,4 @@ marketplace's SHA-bump flow).
 
 ## License
 
-MIT. Fiskmås is operated by Fiskmås (fiskmas.dev); contact: noreply@fiskmas.dev.
+MIT. See [LICENSE](LICENSE) and [SECURITY.md](SECURITY.md) for the security policy. Fiskmås is operated by Fiskmås (fiskmas.dev); contact: noreply@fiskmas.dev.
